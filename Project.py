@@ -2,7 +2,6 @@ import os    #operating system
 import time
 import pandas as pd
 import streamlit as st
-from google import genai
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
@@ -12,6 +11,11 @@ from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 from sklearn.preprocessing import StandardScaler
 from streamlit_option_menu import option_menu
+
+try:
+    from google import genai
+except Exception:
+    genai = None
 
 
 def render_neon_chart(title, icon, fig):
@@ -29,7 +33,12 @@ api_key = (
     or os.getenv("GOOGLE_API_KEY")
     or os.getenv("API_KEY")
 )
-client = genai.Client(api_key=api_key) if api_key else None
+client = None
+if genai is not None and api_key:
+    try:
+        client = genai.Client(api_key=api_key)
+    except Exception:
+        client = None
 
 st.set_page_config(page_title="Heart Disease Prediction",page_icon="🫀")
 
